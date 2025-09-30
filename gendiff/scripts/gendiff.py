@@ -2,6 +2,7 @@
 import argparse
 import json
 import yaml
+from gendiff.diff.core import generate_diff
 
 
 def parse_file(file_path):
@@ -27,7 +28,7 @@ def generate_diff(file1_path, file2_path, format_name='stylish'):
     data1 = parse_file(file1_path)
     data2 = parse_file(file2_path)
     
-    # Красиво форматируем вывод данных
+    # вывод данных
     result = [
         f"Comparison in {format_name} format:",
         f"File 1 ({file1_path}):",
