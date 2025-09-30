@@ -1,1 +1,5 @@
-{"host": "hexlet.io", "timeout": 50}
+{
+  "timeout": 20,
+  "verbose": true,
+  "host": "hexlet.io"
+}

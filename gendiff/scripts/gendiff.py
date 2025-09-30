@@ -1,6 +1,25 @@
 #!/usr/bin/env python3
 import argparse
-from gendiff.parsers.parser import parse_file
+import json
+import yaml
+
+
+def parse_file(file_path):
+    """Parse configuration file (JSON or YAML)"""
+    try:
+        with open(file_path, 'r') as file:
+            content = file.read()
+        
+        if file_path.endswith('.json'):
+            return json.loads(content)
+        elif file_path.endswith(('.yaml', '.yml')):
+            return yaml.safe_load(content)
+        else:
+            raise ValueError(f"Unsupported file format: {file_path}")
+    except FileNotFoundError:
+        raise FileNotFoundError(f"File not found: {file_path}")
+    except (json.JSONDecodeError, yaml.YAMLError) as e:
+        raise ValueError(f"Error parsing {file_path}: {e}")
 
 
 def generate_diff(file1_path, file2_path, format_name='stylish'):
@@ -8,8 +27,16 @@ def generate_diff(file1_path, file2_path, format_name='stylish'):
     data1 = parse_file(file1_path)
     data2 = parse_file(file2_path)
     
-    # Пока просто выводим данные и формат
-    return f"Format: {format_name}\nFile1: {data1}\nFile2: {data2}"
+    # Красиво форматируем вывод данных
+    result = [
+        f"Comparison in {format_name} format:",
+        f"File 1 ({file1_path}):",
+        f"  {data1}",
+        f"File 2 ({file2_path}):", 
+        f"  {data2}",
+        "Differences to be implemented..."
+    ]
+    return "\n".join(result)
 
 
 def main():
@@ -26,8 +53,12 @@ def main():
     
     args = parser.parse_args()
     
-    diff = generate_diff(args.first_file, args.second_file, args.format)
-    print(diff)
+    try:
+        diff = generate_diff(args.first_file, args.second_file, args.format)
+        print(diff)
+    except (FileNotFoundError, ValueError) as e:
+        print(f"Error: {e}")
+        return 1
 
 
 if __name__ == '__main__':
